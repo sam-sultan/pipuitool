@@ -4,7 +4,7 @@ import json
 
 from pipguitool.PIP import PIP
 
-from flask import request, abort
+from flask import request, abort, render_template
 
 
 p = PIP()
@@ -31,6 +31,12 @@ def remove():
 		abort(400)
 	
 	return str(p.remove(request.json['packages']))+"<br/>", 201
+
+
+@app.route('/', methods=['GET'])
+def index():
+
+	return render_template('index.html', packages=p.list())
 
 
 def main():

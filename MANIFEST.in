@@ -1,1 +1,2 @@
-include src/templates/*
+include pipguitool/templates/*
+include pipguitool/static/*

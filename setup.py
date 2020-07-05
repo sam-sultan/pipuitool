@@ -17,6 +17,11 @@ setup_args = dict(
     url='',
     download_url='',
     include_package_data=True,
+    package_data={
+        'pipguitool/templates' : ['*.html'],
+        'pipguitool/static' : ['*.css'],
+        'pipguitool/static' : ['*.js']
+    },
     entry_points={
         'console_scripts': [
             'pipuitool = pipguitool.server:main',
@@ -25,7 +30,8 @@ setup_args = dict(
 )
 
 install_requires = [
-    'pip'
+    'pip',
+    'flask'
 ]
 
 if __name__ == '__main__':
