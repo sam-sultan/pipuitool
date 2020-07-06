@@ -6,6 +6,8 @@ from pipguitool.PIP import PIP
 
 from flask import request, abort, render_template
 
+import os
+
 
 p = PIP()
 app = flask.Flask(__name__)
@@ -40,7 +42,10 @@ def index():
 
 
 def main():
-	app.run(host="0.0.0.0", port=5000, threaded=True)
+
+	port=os.getenv('PORT', 4040)
+
+	app.run(host="0.0.0.0", port=port, threaded=True)
 
 if __name__ == '__main__':
     main()
