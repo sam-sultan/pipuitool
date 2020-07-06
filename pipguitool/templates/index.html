@@ -162,7 +162,7 @@
 
 							for(var key in msg){
 								if(!msg[key]['installed']){
-									package_alert.text(package_alert.text()+"\n"+msg[key]['message']);
+									package_alert.html(package_alert.html()+"\n<strong>"+key+": </strong>"+msg[key]['message']);
 									valid = false;
 								}
 							}
@@ -173,6 +173,8 @@
 									addPackage(msg[key]);
 
 								installModel.modal('hide');
+								$("#install-package-input").val("");
+								package_alert.addClass("d-none");
 							}else{
 								package_alert.removeClass("d-none");
 							}
@@ -228,7 +230,7 @@
 
 		function addPackage(pkg){
 
-			if(pkg['message'].includes("Collecting scipy")){
+			if(!pkg['message'].includes("Collecting scipy")){
 				return;
 			}
 
