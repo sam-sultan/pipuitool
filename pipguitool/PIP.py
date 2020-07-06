@@ -13,10 +13,20 @@ class PIP:
 
 	def install(self, packages):
 
-		p = Popen(["pip", "install"]+packages, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-		output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+		pkgs = {}
+		for pkg in packages:
+			name = pkg.split("==")[0]
+			p = Popen(["pip", "install", pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+			pkgs[name] = { 'name': name, 'installed': True if p.returncode == 0 else False, 'message': (output if p.returncode == 0 else err).decode("utf-8") }
 
-		return output if p.returncode == 0 else err
+		l = self.list()
+		for pkg in l:
+			if pkg['name'] in pkgs.keys():
+				pkgs[pkg['name']]['version'] = pkg['version']
+
+
+		return pkgs
 
 	def remove(self, packages):
 
@@ -39,6 +49,7 @@ class PIP:
 
 def main():
     print(PIP().list())
+    print(PIP().install(['scipy', 'numpy', 'asdqsd']))
     
 if __name__ == '__main__':
     main()

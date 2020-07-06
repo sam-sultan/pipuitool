@@ -22,7 +22,7 @@ def install():
 	if not request.json or not 'packages' in request.json or not hasattr(request.json['packages'], "append"):
 		abort(400)
 	
-	return str(p.install(request.json['packages']))+"<br/>", 201
+	return json.dumps(p.install(request.json['packages'])), 201
 
 @app.route('/remove', methods=['POST'])
 def remove():
@@ -30,7 +30,7 @@ def remove():
 	if not request.json or not 'packages' in request.json or not hasattr(request.json['packages'], "append"):
 		abort(400)
 	
-	return str(p.remove(request.json['packages']))+"<br/>", 201
+	return str(p.remove(request.json['packages'])), 201
 
 
 @app.route('/', methods=['GET'])
