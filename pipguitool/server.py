@@ -12,11 +12,16 @@ import os
 p = PIP()
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+# if upload folder does not exist then
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 
 @app.route('/list', methods=['GET'])
 def list():
     return json.dumps(p.list())
+
 
 @app.route('/install', methods=['POST'])
 def install():
@@ -26,13 +31,32 @@ def install():
 	
 	return json.dumps(p.install(request.json['packages'])), 201
 
+
 @app.route('/remove', methods=['POST'])
 def remove():
 
 	if not request.json or not 'packages' in request.json or not hasattr(request.json['packages'], "append"):
 		abort(400)
 	
-	return str(p.remove(request.json['packages'])), 201
+	return json.dumps(p.remove(request.json['packages'])), 201
+
+
+@app.route('/file', methods=['POST'])
+def file():
+
+	_file = request.files.get('file')
+	
+	# Save file to UPLOAD dir
+	filePath = os.path.join(app.config['UPLOAD_FOLDER'], _file.filename)
+	_file.save(filePath)
+
+	# Install the whl file
+	res = p.installWhl(filePath)
+
+	# remove the uploaded file
+	os.remove(filePath)
+
+	return json.dumps(res), 201
 
 
 @app.route('/', methods=['GET'])

@@ -5,7 +5,7 @@ with open('README.md') as readme_file:
 
 setup_args = dict(
     name='pip-gui-tools',
-    version='0.0.3',
+    version='0.0.4',
     description='A tool for python pip package management',
     long_description_content_type="text/markdown",
     long_description=README,
@@ -31,7 +31,9 @@ setup_args = dict(
 
 install_requires = [
     'pip',
-    'flask'
+    'flask',
+    'pytest',
+    'wheel-inspect'
 ]
 
 if __name__ == '__main__':
