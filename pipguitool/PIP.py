@@ -63,7 +63,7 @@ class PIP:
 		pkgs = {}
 		for pkg in packages:
 			name = pkg.split("==")[0]
-			p = Popen(self.command("uninstall")+["-y", pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			p = Popen(["pip", "uninstall", "-y", pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 			pkgs[name] = { 'name': name, 'removed': True if p.returncode == 0 else False, 'message': (output if p.returncode == 0 else err).decode("utf-8") }
 
