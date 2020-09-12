@@ -8,15 +8,24 @@ from wheel_inspect import inspect_wheel
 
 class PIP:
 
-	def __init__(self):
-		pass
+	def __init__(self, install_path=None):
+		
+		self.install_path = install_path
+
+	def command(self, command):
+
+		if self.install_path is None:
+			return ["pip", command]
+		else:
+			return ["pip", command, "-t", self.install_path]
+
 
 	def install(self, packages):
 
 		pkgs = {}
 		for pkg in packages:
 			name = pkg.split("==")[0]
-			p = Popen(["pip", "install", pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			p = Popen(self.command("install")+[pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 			pkgs[name] = { 'name': name, 'installed': True if p.returncode == 0 else False, 'message': (output if p.returncode == 0 else err).decode("utf-8") }
 
@@ -36,7 +45,7 @@ class PIP:
 
 			package_info = inspect_wheel(filePath)['dist_info']['metadata']
 
-			p = Popen(["pip", "install", filePath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			p = Popen(self.command("install")+[filePath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 			#(output if p.returncode == 0 else err).decode("utf-8")
 			if p.returncode == 0:
@@ -54,7 +63,7 @@ class PIP:
 		pkgs = {}
 		for pkg in packages:
 			name = pkg.split("==")[0]
-			p = Popen(["pip", "uninstall", "-y", pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			p = Popen(self.command("uninstall")+["-y", pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 			pkgs[name] = { 'name': name, 'removed': True if p.returncode == 0 else False, 'message': (output if p.returncode == 0 else err).decode("utf-8") }
 
@@ -63,7 +72,7 @@ class PIP:
 	def getPackagesInfo(self, packages):
 
 		pkgs = {}
-		p = Popen(["pip", "show"]+packages, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		p = Popen(self.command("show")+packages, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 		output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 
 		if p.returncode == 0:
@@ -79,7 +88,7 @@ class PIP:
 
 	def list(self):
 
-		p = Popen(["pip", "list", "--format", "json"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		p = Popen(self.command("list")+["--format", "json"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 		output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 
 		return [ {"name": e['name'], "version": e['version'], "message": "available"} for e in json.loads(output) ] if p.returncode == 0 else []

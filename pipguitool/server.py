@@ -9,7 +9,9 @@ from flask import request, abort, render_template
 import os
 
 
-p = PIP()
+INSTALL_PATH=os.getenv('INSTALL_PATH', None)
+
+p = PIP(install_path=INSTALL_PATH)
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
