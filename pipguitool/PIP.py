@@ -72,7 +72,7 @@ class PIP:
 	def getPackagesInfo(self, packages):
 
 		pkgs = {}
-		p = Popen(self.command("show")+packages, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		p = Popen(["pip", "show"]+packages, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 		output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 
 		if p.returncode == 0:
@@ -88,7 +88,7 @@ class PIP:
 
 	def list(self):
 
-		p = Popen(self.command("list")+["--format", "json"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		p = Popen(["pip", "list", "--format", "json"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 		output, err = p.communicate(b"input data that is passed to subprocess' stdin")
 
 		return [ {"name": e['name'], "version": e['version'], "message": "available"} for e in json.loads(output) ] if p.returncode == 0 else []
