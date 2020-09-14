@@ -1,8 +1,12 @@
 
-## Compile
+## Install
 
-python3 setup.py sdist bdist_wheel
+pip install pip-gui-tools
 
-## Upload
 
-twine upload dist/*
+## Run
+
+pipuitool -p <PORT> -i <TARGET_PIP_INSTALL_PATH>
+
+	-p (int): Port Number (optional)
+	-i (str): Target Path of pip install. If not set, then no target is set (optional)

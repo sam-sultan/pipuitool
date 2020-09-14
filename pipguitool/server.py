@@ -7,11 +7,20 @@ from pipguitool.PIP import PIP
 from flask import request, abort, render_template
 
 import os
+import argparse
 
 
-INSTALL_PATH=os.getenv('INSTALL_PATH', None)
+# Args
+# spark-submit arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--port", help="Port (default: 4040)", type=int, default=4040)
+parser.add_argument("-i", "--path", help="Target path for pip when installing a new package", default=None)
+args = parser.parse_args()
 
-p = PIP(install_path=INSTALL_PATH)
+
+
+
+p = PIP(install_path=args.path)
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
@@ -69,9 +78,7 @@ def index():
 
 def main():
 
-	port=os.getenv('PORT', 4040)
-
-	app.run(host="0.0.0.0", port=port, threaded=True)
+	app.run(host="0.0.0.0", port=args.port, threaded=True)
 
 if __name__ == '__main__':
     main()

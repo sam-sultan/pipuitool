@@ -1,11 +1,17 @@
 from setuptools import setup, find_packages
+import version
+
 
 with open('README.md') as readme_file:
     README = readme_file.read()
 
+# To Build and Upload, Run:
+# python3 setup.py sdist bdist_wheel
+# twine upload dist/*
+
 setup_args = dict(
     name='pip-gui-tools',
-    version='0.0.7',
+    version=version.__version__,
     description='A tool for python pip package management',
     long_description_content_type="text/markdown",
     long_description=README,
