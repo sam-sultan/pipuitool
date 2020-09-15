@@ -123,7 +123,12 @@
 	        </button>
 	      </div>
 	      <div class="modal-body">
-	        <input id="install-package-input" type="text" placeholder="numpy, scipy, requests, etc..." />
+	        <!--<input id="install-package-input" type="text" placeholder="numpy, scipy, requests, etc..." />-->
+	        <div class="form-group">
+		        <textarea id="install-package-input" 
+		        			rows="6"
+		        			placeholder="numpy==1.18.0&#10;scipy&#10;requests&#10;..."></textarea>
+	    	</div>
 	        <div id="install-package-alert" class="alert alert-danger d-none"></div>
 	      </div>
 	      <div class="modal-footer">
@@ -170,7 +175,7 @@
 			$("#install-package").on('click', function(){ $("#installModal").modal("toggle"); });
 			$("#install-package-cancel").on('click', function(){ $("#install-package-input").val(""); $("#install-package-alert").addClass("d-none"); });
 			$("#install-package-btn").on('click', function(){
-				var pkgs = $("#install-package-input").val().split(",").map( p => p.trim() ),
+				var pkgs = $("#install-package-input").val().split(/\r?\n/).map( p => p.trim() ),
 					install_btn = $(this),
 					package_alert = $("#install-package-alert"),
 					installModel = $("#installModal");
