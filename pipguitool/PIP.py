@@ -5,6 +5,13 @@ import json
 
 from wheel_inspect import inspect_wheel
 
+import re
+
+
+# REGEX package name
+_p_regex = re.compile('^[a-zA-Z0-9\-]+([=]{2}[0-9]+([\.][0-9]+([\.][0-9]+)?)?)?$')
+_file_regex = re.compile('^[a-zA-Z0-9-\_\.]+$')
+
 
 class PIP:
 
@@ -24,6 +31,12 @@ class PIP:
 
 		pkgs = {}
 		for pkg in packages:
+
+			# validate package name
+			if not self.validate(pkg):
+				pkgs[pkg] = { 'name': pkg, 'installed': False, 'message': '\'{}\' is invalid'.format(pkg) }
+				continue
+			
 			name = pkg.split("==")[0]
 			p = Popen(self.command("install")+[pkg], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate(b"input data that is passed to subprocess' stdin")
@@ -40,8 +53,12 @@ class PIP:
 	def installWhl(self, filePath):
 
 		filename = filePath.split("/")[-1]
-		
+
 		try:
+
+			# validate filename
+			if not self.validate_filename(filename):
+				raise Exception("Invalide filename")
 
 			package_info = inspect_wheel(filePath)['dist_info']['metadata']
 
@@ -93,6 +110,14 @@ class PIP:
 
 		return [ {"name": e['name'], "version": e['version'], "message": "available"} for e in json.loads(output) ] if p.returncode == 0 else []
 
+	def validate(self, package):
+
+		return not _p_regex.match(package) is None
+
+	def validate_filename(self, filename):
+
+		return not _file_regex.match(filename) is None
+
 	def has(self, package):
 
 		return len(list(filter(lambda x: x['name'] == package, self.list()))) > 0
@@ -100,9 +125,12 @@ class PIP:
 
 def main():
     #print(PIP().list())
-    #print(PIP().install(['scipy', 'numpy', 'asdqsd']))
-    print(PIP().installWhl("../dist/pip_gui_tools-0.0.3-py3-none-any.whl"))
-    #print(PIP().installWhl("../dist/pip-gui-tools-0.0.3.tar.gz"))
+    result = PIP().install(['scipy', 'numpy==1.18', 'asdasfafg3&_'])
+    for i in result:
+    	if not result[i]['installed']:
+    		print(i, result[i]['message'])
+    #print(PIP().installWhl("../dist/pip_gui_tools-0.0.8-py3-none-any.whl"))
+    #print(PIP().installWhl("../dist/invalid_filename&.ad"))
     #print(PIP().remove(['scipy', 'numpy', 'asdqsd']))
     #print(PIP().getPackagesInfo(['scipy', 'numpy', 'asdqsd']))
 

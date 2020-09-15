@@ -31,6 +31,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 @app.route('/list', methods=['GET'])
 def list():
+	
     return json.dumps(p.list())
 
 

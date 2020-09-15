@@ -8,4 +8,4 @@ python3 setup.py sdist bdist_wheel
 
 pip install dist/pip_gui_tools-$version-py3-none-any.whl
 
-pipuitool
+pipuitool -p 2333
