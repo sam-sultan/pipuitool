@@ -183,7 +183,7 @@
 					install_btn.prop("disabled", true);
 					$.ajax({
 						method: "POST",
-						url: "/install",
+						url: "{{ prefix }}install",
 						contentType: "application/json",
 						data: JSON.stringify({ packages: pkgs }),
 						complete: function(jqXHR, status){
@@ -231,7 +231,7 @@
 				button.prop("disabled",true);
 				$.ajax({
 					method: "POST",
-					url: "/remove",
+					url: "{{ prefix }}remove",
 					contentType: "application/json",
 					data: JSON.stringify({ packages: [package] }),
 					complete: function(jqXHR, status){
@@ -272,7 +272,7 @@
 					install_btn.prop("disabled", true);
 					$.ajax({
 						method: "POST",
-						url: "/file",
+						url: "{{ prefix }}file",
 						data: fd,
 			            contentType: false,
 			            cache: false,
@@ -316,7 +316,7 @@
 
 			$.ajax({
 				method: "GET",
-				url: "/list",
+				url: "{{ prefix }}list",
 				contentType: "application/json",
 				complete: function(jqXHR, status){
 					var msg = JSON.parse(jqXHR.responseText);

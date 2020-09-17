@@ -4,7 +4,7 @@ import json
 
 from pipguitool.PIP import PIP
 
-from flask import request, abort, render_template
+from flask import Blueprint, request, abort, render_template
 
 import os
 import argparse
@@ -14,14 +14,17 @@ import argparse
 # spark-submit arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--port", help="Port (default: 4040)", type=int, default=4040)
+parser.add_argument("-b", "--prefix", help="Path Prefix ex. /pipui", default=None)
 parser.add_argument("-i", "--path", help="Target path for pip when installing a new package", default=None)
 args = parser.parse_args()
 
 
-
-
 p = PIP(install_path=args.path)
-app = flask.Flask(__name__)
+
+# BluePrint
+bp = Blueprint('bp', __name__, static_folder= 'static', template_folder='templates')
+# APP
+app = flask.Flask(__name__, static_url_path= '/static' if args.prefix is None else '{}/static'.format(args.prefix) )
 app.config["DEBUG"] = True
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 # if upload folder does not exist then
@@ -29,13 +32,13 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 
-@app.route('/list', methods=['GET'])
+@bp.route('/list', methods=['GET'])
 def list():
 	
     return json.dumps(p.list())
 
 
-@app.route('/install', methods=['POST'])
+@bp.route('/install', methods=['POST'])
 def install():
 
 	if not request.json or not 'packages' in request.json or not hasattr(request.json['packages'], "append"):
@@ -44,7 +47,7 @@ def install():
 	return json.dumps(p.install(request.json['packages'])), 201
 
 
-@app.route('/remove', methods=['POST'])
+@bp.route('/remove', methods=['POST'])
 def remove():
 
 	if not request.json or not 'packages' in request.json or not hasattr(request.json['packages'], "append"):
@@ -53,7 +56,7 @@ def remove():
 	return json.dumps(p.remove(request.json['packages'])), 201
 
 
-@app.route('/file', methods=['POST'])
+@bp.route('/file', methods=['POST'])
 def file():
 
 	_file = request.files.get('file')
@@ -71,10 +74,16 @@ def file():
 	return json.dumps(res), 201
 
 
-@app.route('/', methods=['GET'])
+@bp.route('/', methods=['GET'])
 def index():
 
-	return render_template('index.html', packages=p.list())
+	return render_template('index.html', packages=p.list(), prefix= '/' if args.prefix is None else '{}/'.format(args.prefix) )
+
+
+
+app.register_blueprint(bp, url_prefix= '/' if args.prefix is None else args.prefix )
+
+
 
 
 def main():
